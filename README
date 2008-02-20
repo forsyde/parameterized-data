@@ -1,0 +1,31 @@
+parameterized-data : Parameterized data library implementing lightweigth 
+dependent types
+
+DESCRIPTION
+
+ This library provides an implementation of parameterized types using
+ type-level computations to implement the type parameters and emulate
+ dependent types.
+
+ Right now only fixed-sized vectors are provided.
+
+
+DEPENDENCIES
+ 
+ type-level depends on GHC (due to the use of Template Haskell)
+
+INSTALLATION
+
+to install globally, for the whole system (requires admin permissions)
+
+$ ./Setup.hs configure
+$ ./Setup.hs build
+$ ./Setup.hs haddock # generate documentation, optional
+$ ./Setup.hs install
+
+to install locally and just for your own user
+
+$ ./Setup.hs configure --prefix=The/selected/local/directory
+$ ./Setup.hs build
+$ ./Setup.hs haddock # generate documentation, optional
+$ ./Setup.hs install --user

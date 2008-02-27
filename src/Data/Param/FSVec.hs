@@ -21,7 +21,7 @@ module Data.Param.FSVec
 #if __GLASGOW_HASKELL__ >= 609
    v,
 #endif
-   unsafeVector, readFSVec, length, genericLength,
+   unsafeVector, reallyUnsafeVector, readFSVec, length, genericLength,
    lengthT, fromVector, null, (!), replace, head, last,
    init, tail, take, drop, select, group, (<+), (++),
    map, zipWith, foldl, foldr, zip, unzip, shiftl, shiftr,
@@ -108,12 +108,29 @@ parseFSVecPat = error "Data.Param.FSVec: quasiquoting paterns not supported"
 #endif 
 
 -- | Build a vector from a list (unsafe version: The static/dynamic size of 
---   the list is checked at runtime)
+--   the list is checked to match at runtime)
 unsafeVector :: Nat s => s -> [a] -> FSVec s a
 unsafeVector l xs
  | toNum l /= P.length xs = 
       error "unsafeVector: dynamic/static length mismatch"
  | otherwise = FSVec xs
+
+-- | Build a vector from a list.  
+-- 
+--  Unlike unsafeVector, reallyunsafeVector doesn't have access to the 
+--  static size of the list and thus cannot not check it against its
+--  dynamic size (which saves traversing the list at runtime to obtain 
+--  the dynamic length).
+--
+--  Therefore, reallyUnsafeVector (the name is that long on purspose)
+--  can be used to gain some performance but may break the consistency
+--  of the size parameter if not handled with care (i.e. the size
+--  parameter can nolonger be checked statically and the fullfilment of
+--  function constraints is left to the programmers judgement).
+--  
+--  Do not use reallyUnsafeVector unless you know what you're doing!
+reallyUnsafeVector :: [a] -> FSVec s a
+reallyUnsafeVector = FSVec
 
 -- | Read a vector. As it happens with vectorCPS, this is the best we can 
 --   achieve

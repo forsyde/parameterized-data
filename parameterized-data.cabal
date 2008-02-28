@@ -12,7 +12,7 @@ maintainer:     alfonso.acosta@gmail.com
 homepage:       http://code.haskell.org/parameterized-data
 stability:      alpha
 package-url:    http://code.haskell.org/parameterized-data
-synopsis:       Parameterized data library implementing lightweigth dependent 
+synopsis:       Parameterized data library implementing lightweight dependent 
                 types
 description:
  This library provides an implementation of parameterized types using

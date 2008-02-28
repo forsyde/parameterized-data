@@ -12,7 +12,8 @@ DESCRIPTION
 
 DEPENDENCIES
  
- type-level depends on GHC (due to the use of Template Haskell)
+ parameterized-data depends on GHC (due to the use of Template Haskell)
+ and the type-level library
 
 INSTALLATION
 

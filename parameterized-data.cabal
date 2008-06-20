@@ -27,7 +27,7 @@ tested-with:    GHC==6.8.2
 
 -- depends on ghc due to the use of Template Haskell
 Library
-  build-depends:   base, ghc > 6.6, type-level, template-haskell > 2.0
+  build-depends:   base, type-level, template-haskell > 2.0
   hs-source-dirs:  src
   exposed-modules: Data.Param,
                    Data.Param.FSVec

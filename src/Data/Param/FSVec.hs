@@ -21,11 +21,11 @@ module Data.Param.FSVec
 #if __GLASGOW_HASKELL__ >= 609
    v,
 #endif
-   unsafeVector, reallyUnsafeVector, readFSVec, length, genericLength,
-   lengthT, fromVector, null, (!), replace, head, last,
-   init, tail, take, drop, select, group, (<+), (++),
-   map, zipWith, foldl, foldr, zip, unzip, shiftl, shiftr,
-   rotl, rotr, concat, reverse, iterate, generate, copy 
+   unsafeVector, reallyUnsafeVector, readFSVec, readFSVecCPS, length,
+   genericLength, lengthT, fromVector, null, (!), replace, head, last,
+   init, tail, take, drop, select, group, (<+), (++), map, zipWith,
+   foldl, foldr, zip, unzip, shiftl, shiftr, rotl, rotr, concat,
+   reverse, iterate, generate, copy
   ) where
 
 import Data.TypeLevel.Num hiding ((-),(+),(*),(>),(<),(>=),(<=),(==))
@@ -112,7 +112,7 @@ parseFSVecPat = error "Data.Param.FSVec: quasiquoting paterns not supported"
 unsafeVector :: Nat s => s -> [a] -> FSVec s a
 unsafeVector l xs
  | toNum l /= P.length xs = 
-      error "unsafeVector: dynamic/static length mismatch"
+      error (show 'unsafeVector P.++ ": dynamic/static length mismatch")
  | otherwise = FSVec xs
 
 -- | Build a vector from a list.  
@@ -132,35 +132,31 @@ unsafeVector l xs
 reallyUnsafeVector :: [a] -> FSVec s a
 reallyUnsafeVector = FSVec
 
--- | Read a vector. As it happens with vectorCPS, this is the best we can 
---   achieve
-readFSVec :: Read a => String -> (forall s . Nat s => FSVec s a -> w) -> w
-readFSVec str = unsafeVectorCPS l xs
- where 
-  (xs, l) =  readFSVecList str
-  -- modified version of Prelude.read which accepts < > instead
-  -- of [ ] to read lists and also provides the list length
-  readFSVecList             :: (Read a) => String -> ([a], Int)
-  readFSVecList s =  case [(x,n) | (x,n,t) <- readList' s, ("","") <- lex t] of
-                            [x] -> x
-                            []  -> error "FSVec.readFSVec: no parse"
-                            _   -> error "FSVec.readFSVec: ambiguous parse"
-   where
-    readList' :: Read a => String -> [([a], Int, String)]
-    readList'         = readParen' False (\r -> [pr | ("<",s)  <- lex r,
-                                                      pr       <- readl s])
-    readl  s = [([],0,t)   | (">",t)  <- lex s] P.++
-                                          [(x:xs,1+n,u) | (x,t)    <- reads s,
-                                                      (xs,n,u)   <- readl' t]
-    readl' s = [([],0,t)   | (">",t)  <- lex s] P.++
-                                          [(x:xs,1+n,v) | (",",t)  <- lex s,
-                                                      (x,u)    <- reads t,
-                                                      (xs,n,v)   <- readl' u]
-    readParen' b g  = if b then mandatory else optional
-                      where optional r  = g r P.++ mandatory r
-                            mandatory r = [(x,n,u) | ("(",s) <- lex r,
-                                                   (x,n,t)   <- optional s,
-                                                 (")",u) <- lex t    ]
+-- | Read a vector (Note the the size of 
+--   the vector string is checked to match the resulting type at runtime)
+readFSVec :: (Read a, Nat s) => String -> FSVec s a
+readFSVec = read
+ 
+instance (Read a, Nat s) => Read (FSVec s a) where
+ readsPrec _ str
+   | all fitsLength posibilities = P.map toReadS posibilities
+   | otherwise = error (fName P.++ ":  string/dynamic length mismatch")
+  where fName = "Data.Param.FSVec.read"
+        expectedL = toInt (undefined :: s)
+        posibilities = readFSVecList str
+        fitsLength (_, l, _) = l == expectedL
+        toReadS (xs, _, rest) = (FSVec xs, rest)
+
+-- | Read a vector, CPS version.
+readFSVecCPS :: Read a => String -> (forall s . Nat s => FSVec s a -> w) -> w
+readFSVecCPS str = unsafeVectorCPS l xs
+ where fName = show 'readFSVecCPS
+       (xs,l) = case [(xs,l) | (xs,l,rest) <- readFSVecList str,  
+                           ("","") <- lexFSVec rest] of
+                       [(xs,l)] -> (xs,l)
+                       []   -> error (fName P.++ ": no parse")
+                       _    -> error (fName P.++ ": ambiguous parse")
+ 
 ----------------------
 -- Observing functions
 ----------------------
@@ -436,3 +432,29 @@ unsafeVectorCPS :: forall a w . Int -> [a] ->
 unsafeVectorCPS l xs f = reifyIntegral l 
                       (\(_ :: lt) -> f ((FSVec xs) :: (FSVec lt a)))
  
+-- Modified version of Prelude.readList which accepts < > instead
+-- of [ ] to read lists and also provides the list length
+readFSVecList :: Read a => String -> [([a], Int, String)]
+readFSVecList = readParen' False (\r -> [pr | ("<",s)  <- lexFSVec r,
+                                              pr <- readl s])
+  where
+    readl  s = [([],0,t)   | (">",t)  <- lexFSVec s] P.++
+                                          [(x:xs,1+n,u) | (x,t)    <- reads s,
+                                                      (xs,n,u)   <- readl' t]
+    readl' s = [([],0,t)   | (">",t)  <- lexFSVec s] P.++
+                                          [(x:xs,1+n,v) | (",",t)  <- lex s,
+                                                      (x,u)    <- reads t,
+                                                      (xs,n,v)   <- readl' u]
+    readParen' b g  = if b then mandatory else optional
+                      where optional r  = g r P.++ mandatory r
+                            mandatory r = [(x,n,u) | ("(",s) <- lexFSVec r,
+                                                   (x,n,t)   <- optional s,
+                                                 (")",u) <- lexFSVec t    ]
+
+-- Custom lexer for FSVecs, we cannot use lex directly because it considers
+-- sequences of < and > as unique lexemes, and that breaks nested FSVecs, e.g.
+-- <<1,2><3,4>>
+lexFSVec :: ReadS String
+lexFSVec ('>':rest) = [(">",rest)]
+lexFSVec ('<':rest) = [("<",rest)]
+lexFSVec str = lex str

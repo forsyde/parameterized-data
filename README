@@ -7,7 +7,8 @@ DESCRIPTION
  type-level computations to implement the type parameters and emulate
  dependent types.
 
- Right now only fixed-sized vectors are provided.
+ Right now only fixed-sized vectors are provided. A tutorial on how to
+ use them can be found at http://www.ict.kth.se/org/ict/ecs/sam/projects/forsyde/www/files/tutorial/tutorial.html#FSVec
 
 
 DEPENDENCIES

@@ -15,6 +15,7 @@
 --
 -- 'FSVec': Fixed sized vectors. Vectors with numerically parameterized size.
 --
+-- Tutorial: <http://www.ict.kth.se/org/ict/ecs/sam/projects/forsyde/www/files/tutorial/tutorial.html#FSVec>
 ----------------------------------------------------------------------------
 module Data.Param.FSVec 
   (FSVec, empty, (+>), singleton, vectorCPS, vectorTH,
@@ -90,15 +91,16 @@ vectorTH xs = (vectorCPS xs) lift
 #if __GLASGOW_HASKELL__ >= 609
 -- | Vector quasiquoter
 v :: QuasiQuoter
-v = QuasiQuoter parseFSVecExp parseFSVecPat
+v = undefined
+-- v = QuasiQuoter (fst.parseFSVecExp) parseFSVecPat
 
 -- Build a vector using quasiquotation
 -- Not possible in the general case! It is feasible, though, when only 
 -- allowing monomorphic vectors. For example, in the case of Ints:
 -- parseFSVecExp :: String -> ExpQ
 -- parseFSVecExp str = (readFSVec str) (lift :: Nat s => FSVec s Int -> ExpQ)
-parseFSVecExp :: String -> ExpQ
-parseFSVecExp str = undefined -- (readFSVec str) lift  
+parseFSVecExp :: forall a . String -> (ExpQ, a)
+parseFSVecExp str = ((readFSVec str) (lift :: (Nat s, Lift a) => FSVec s a -> ExpQ), undefined)  
 
 -- Pattern match a vector using quasiquotation
 parseFSVecPat :: String -> PatQ
@@ -361,7 +363,7 @@ iterate s f x = let s' = toInt s in FSVec (P.take s' $ P.iterate f x)
 -- | 'generate' behaves in the same way as 'iterate', but starts with the 
 -- application of the supplied function to the supplied value. 
 --
--- > Vector> generate d5 (+1) 1
+-- > FSVec> generate d5 (+1) 1
 -- 
 -- > <2,3,4,5,6> :: Num a => FSVec  D5 a
 generate :: Nat s => s -> (a -> a) -> a -> FSVec s a
@@ -370,9 +372,9 @@ generate s f x = let s' = toInt s in FSVec (P.take s' $ P.tail $ P.iterate f x)
 
 -- | generates a vector with a given number of copies of the same element. 
 --
--- > Vector> copy d7 5 
+-- > FSVec> copy d7 5 
 -- 
--- > <5,5,5,5,5,5,5> :: Vector Integer
+-- > <5,5,5,5,5,5,5> :: FSVec D7 Integer
 copy :: Nat s => s -> a -> FSVec s a
 copy s x = iterate s id x
 

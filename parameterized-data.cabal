@@ -31,4 +31,6 @@ Library
   hs-source-dirs:  src
   exposed-modules: Data.Param,
                    Data.Param.FSVec
+  extra-source-files: LICENSE,
+                      README
   ghc-options:	-Wall 

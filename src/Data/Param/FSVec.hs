@@ -1,4 +1,4 @@
-{-# LANGUAGE Rank2Types, ScopedTypeVariables, PatternSignatures,
+{-# LANGUAGE Rank2Types, ScopedTypeVariables,
              MultiParamTypeClasses, DeriveDataTypeable, 
              GeneralizedNewtypeDeriving, TemplateHaskell, CPP #-}
 {-# OPTIONS_GHC -fno-warn-incomplete-patterns -fno-warn-name-shadowing #-}
@@ -15,13 +15,13 @@
 --
 -- 'FSVec': Fixed sized vectors. Vectors with numerically parameterized size.
 --
--- Tutorial: <http://www.ict.kth.se/org/ict/ecs/sam/projects/forsyde/www/files/tutorial/tutorial.html#FSVec>
+-- Tutorial: <http://www.ict.kth.se/forsyde/files/tutorial/tutorial.html#FSVec>
 ----------------------------------------------------------------------------
 module Data.Param.FSVec 
   (FSVec, empty, (+>), singleton, vectorCPS, vectorTH,
-#if __GLASGOW_HASKELL__ >= 609
-   v,
-#endif
+-- #if __GLASGOW_HASKELL__ >= 609
+--    v,
+-- #endif
    unsafeVector, reallyUnsafeVector, readFSVec, readFSVecCPS, length,
    genericLength, lengthT, fromVector, null, (!), replace, head, last,
    init, tail, take, drop, select, group, (<+), (++), map, zipWith,
@@ -43,9 +43,9 @@ import qualified Data.Foldable  as DF (Foldable, foldr)
 import qualified Data.Traversable as DT (Traversable(traverse)) 
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax (Lift(..))
-#if __GLASGOW_HASKELL__ >= 609
-import Language.Haskell.TH.Quote
-#endif
+-- #if __GLASGOW_HASKELL__ >= 609
+-- import Language.Haskell.TH.Quote
+-- #endif
 
 
 -- | Fixed-Sized Vector data type, indexed with type-level naturals, the 
@@ -89,24 +89,24 @@ vectorTH :: Lift a => [a] -> ExpQ
 vectorTH xs = (vectorCPS xs) lift
 
 #if __GLASGOW_HASKELL__ >= 609
--- | Vector quasiquoter
-v :: QuasiQuoter
-v = undefined
--- v = QuasiQuoter (fst.parseFSVecExp) parseFSVecPat
-
--- Build a vector using quasiquotation
--- Not possible in the general case! It is feasible, though, when only 
--- allowing monomorphic vectors. For example, in the case of Ints:
--- parseFSVecExp :: String -> ExpQ
--- parseFSVecExp str = (readFSVec str) (lift :: Nat s => FSVec s Int -> ExpQ)
-parseFSVecExp :: forall a . String -> (ExpQ, a)
-parseFSVecExp str = ((readFSVec str) (lift :: (Nat s, Lift a) => FSVec s a -> ExpQ), undefined)  
-
--- Pattern match a vector using quasiquotation
-parseFSVecPat :: String -> PatQ
-parseFSVecPat = error "Data.Param.FSVec: quasiquoting paterns not supported"
-
--- __GLASGOW_HASKELL__
+-- -- | Vector quasiquoter
+-- v :: QuasiQuoter
+-- v = undefined
+-- -- v = QuasiQuoter (fst.parseFSVecExp) parseFSVecPat
+-- 
+-- -- Build a vector using quasiquotation
+-- -- Not possible in the general case! It is feasible, though, when only 
+-- -- allowing monomorphic vectors. For example, in the case of Ints:
+-- -- parseFSVecExp :: String -> ExpQ
+-- -- parseFSVecExp str = (readFSVec str) (lift :: Nat s => FSVec s Int -> ExpQ)
+-- parseFSVecExp :: forall a . String -> (ExpQ, a)
+-- parseFSVecExp str = ((readFSVec str) (lift :: (Nat s, Lift a) => FSVec s a -> ExpQ), undefined)  
+-- 
+-- -- Pattern match a vector using quasiquotation
+-- parseFSVecPat :: String -> PatQ
+-- parseFSVecPat = error "Data.Param.FSVec: quasiquoting paterns not supported"
+-- 
+-- -- __GLASGOW_HASKELL__
 #endif 
 
 -- | Build a vector from a list (unsafe version: The static/dynamic size of 

@@ -1,5 +1,5 @@
 name:           parameterized-data
-version:        0.1.3
+version:        0.1.4
 cabal-version:  >= 1.2
 build-type:     Simple
 license:        BSD3
@@ -19,16 +19,16 @@ description:
  type-level computations to implement the type parameters and emulate
  dependent types.
 
- Right now only fixed-sized vectors are provided. A tutorial on how to use them can be found at <http://www.ict.kth.se/org/ict/ecs/sam/projects/forsyde/www/files/tutorial/tutorial.html#FSVec>
+ Right now only fixed-sized vectors are provided. A tutorial on how to use them can be found at <http://www.ict.kth.se/forsyde/files/tutorial/tutorial.html#FSVec>
 
 category:       Data
-tested-with:    GHC==6.8.2
+tested-with:    GHC==6.10.4
 extra-source-files: LICENSE,
                     README
 
 -- depends on ghc due to the use of Template Haskell
 Library
-  build-depends:   base, type-level, template-haskell > 2.0
+  build-depends:   base>=4 && <6, type-level, template-haskell > 2.0, syb
   hs-source-dirs:  src
   exposed-modules: Data.Param,
                    Data.Param.FSVec

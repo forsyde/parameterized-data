@@ -32,7 +32,8 @@ module Data.Param.FSVec
 import Data.TypeLevel.Num hiding ((-),(+),(*),(>),(<),(>=),(<=),(==))
 import Data.TypeLevel.Num.Aliases.TH (dec2TypeLevel)
 
-import Data.Generics (Data, Typeable)
+import Data.Data (Data, Typeable, dataTypeOf, toConstr, gunfold, gfoldl,
+                  mkConstr, mkDataType, Fixity(..))
 import qualified Prelude as P
 import Prelude hiding (
               null, length, head, tail, last, init, take, drop, 
@@ -51,7 +52,15 @@ import Language.Haskell.TH.Syntax (Lift(..))
 -- | Fixed-Sized Vector data type, indexed with type-level naturals, the 
 --   first index for all vectors is 0
 newtype Nat s => FSVec s a = FSVec {unFSVec :: [a]}
- deriving (Eq, Typeable, Data)
+ deriving (Eq, Typeable)
+
+instance (Data a, Typeable s) => Data (FSVec s a) where
+    dataTypeOf (_) = tFSVec
+    toConstr (FSVec _) = cFSVec
+    gunfold k z (_) = k (z FSVec)
+    gfoldl k z (FSVec a1) = (z FSVec `k` a1)  
+cFSVec = mkConstr tFSVec "FSVec" ["unFSVec"] Prefix
+tFSVec = mkDataType "Data.Param.FSVec" [cFSVec]
 
 instance Show a => Show (FSVec s a) where
  showsPrec _  = showV.unFSVec

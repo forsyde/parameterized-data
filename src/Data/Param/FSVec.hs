@@ -1,6 +1,7 @@
 {-# LANGUAGE Rank2Types, ScopedTypeVariables,
              MultiParamTypeClasses, DeriveDataTypeable, 
-             GeneralizedNewtypeDeriving, TemplateHaskell, CPP #-}
+             GeneralizedNewtypeDeriving, TemplateHaskell, 
+             TypeOperators, CPP #-}
 {-# OPTIONS_GHC -fno-warn-incomplete-patterns -fno-warn-name-shadowing #-}
 -----------------------------------------------------------------------------
 -- |

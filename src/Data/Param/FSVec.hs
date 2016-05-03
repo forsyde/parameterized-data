@@ -25,7 +25,7 @@ module Data.Param.FSVec
 -- #endif
    unsafeVector, reallyUnsafeVector, readFSVec, readFSVecCPS, length,
    genericLength, lengthT, fromVector, null, (!), replace, head, last,
-   init, tail, take, drop, select, group, (<+), (++), map, zipWith,
+   init, tail, take, drop, select, group, (<+), (++), map, zipWith, zipWith3,
    foldl, foldr, zip, unzip, shiftl, shiftr, rotl, rotr, concat,
    reverse, iterate, generate, copy
   ) where
@@ -39,7 +39,7 @@ import qualified Prelude as P
 import Prelude hiding (
               null, length, head, tail, last, init, take, drop, 
 	      (++), map, foldl, foldr, 
-	      zipWith, zip, unzip, 
+	      zipWith, zipWith3, zip, unzip, 
 	      concat, reverse, iterate)
 import qualified Data.Foldable  as DF (Foldable, foldr)
 import qualified Data.Traversable as DT (Traversable(traverse)) 
@@ -288,6 +288,10 @@ map f = liftV (P.map f)
 zipWith :: Nat s => (a -> b -> c) -> FSVec s a -> FSVec s b -> FSVec s c
 zipWith f = liftV2 (P.zipWith f)
  
+-- | Applies function pairwise on two vectors
+zipWith3 :: Nat s => (a -> b -> c -> d) -> FSVec s a -> FSVec s b -> FSVec s c -> FSVec s d
+zipWith3 f = liftV3 (P.zipWith3 f)
+ 
 -- | Folds a function from the right to the left  over a vector using an
 --   initial value.
 foldl :: Nat s => (a -> b -> a) -> a -> FSVec s b -> a 
@@ -420,6 +424,11 @@ liftV f  =  FSVec . f . unFSVec
 -- note it is unsafe and shouldn't be exported
 liftV2 :: ([a] -> [b] -> [c]) -> FSVec s1 a -> FSVec s2 b -> FSVec s3 c
 liftV2 f a b = FSVec (f (unFSVec a) (unFSVec b))
+  
+-- the FSVec equivalent of liftM
+-- note it is unsafe and shouldn't be exported
+liftV3 :: ([a] -> [b] -> [c] -> [d]) -> FSVec s1 a -> FSVec s2 b -> FSVec s3 c -> FSVec s4 d
+liftV3 f a b c = FSVec (f (unFSVec a) (unFSVec b) (unFSVec c))
   
 -- version of splitAt which checks if the list contains enough elements
 splitAtM :: Int -> [a] -> Maybe ([a],[a])

@@ -1,6 +1,6 @@
 name:           parameterized-data
 version:        0.1.6
-cabal-version:  >= 1.2
+cabal-version:  >= 1.6
 build-type:     Simple
 license:        BSD3
 license-file:   LICENSE
@@ -33,3 +33,7 @@ Library
   exposed-modules: Data.Param,
                    Data.Param.FSVec
   ghc-options:	-Wall 
+
+source-repository head
+  type:     git
+  location: https://github.com/forsyde/parameterized-data.git

@@ -1,6 +1,6 @@
 name:           parameterized-data
 version:        0.1.6
-cabal-version:  >= 1.2
+cabal-version:  >= 1.6
 build-type:     Simple
 license:        BSD3
 license-file:   LICENSE
@@ -22,7 +22,7 @@ description:
  Right now only fixed-sized vectors are provided. A tutorial on how to use them can be found at <http://www.ict.kth.se/forsyde/files/tutorial/tutorial.html#FSVec>
 
 category:       Data
-tested-with:    GHC==6.12.3
+tested-with:    GHC==7.10.3 GHC==8.0.1
 extra-source-files: LICENSE,
                     README
 
@@ -33,3 +33,8 @@ Library
   exposed-modules: Data.Param,
                    Data.Param.FSVec
   ghc-options:	-Wall 
+
+source-repository head
+  type:     git
+  location: git://github.com/forsyde/parameterized-data.git
+

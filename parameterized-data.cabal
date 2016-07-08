@@ -28,7 +28,7 @@ extra-source-files: LICENSE,
 
 -- depends on ghc due to the use of Template Haskell
 Library
-  build-depends:   base>=4 && <6, type-level, template-haskell > 2.0
+  build-depends:   base>=4 && <6, type-level>=0.3.0, template-haskell > 2.0
   hs-source-dirs:  src
   exposed-modules: Data.Param,
                    Data.Param.FSVec

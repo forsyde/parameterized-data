@@ -16,7 +16,7 @@
 --
 -- 'FSVec': Fixed sized vectors. Vectors with numerically parameterized size.
 --
--- Tutorial: <http://www.ict.kth.se/forsyde/files/tutorial/tutorial.html#FSVec>
+-- Tutorial: <https://forsyde.ict.kth.se/trac/wiki/ForSyDe/Haskell/ForSyDeTutorial#FSVec>
 ----------------------------------------------------------------------------
 module Data.Param.FSVec 
   (FSVec, empty, (+>), singleton, vectorCPS, vectorTH,

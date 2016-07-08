@@ -8,7 +8,7 @@ DESCRIPTION
  dependent types.
 
  Right now only fixed-sized vectors are provided. A tutorial on how to
- use them can be found at http://www.ict.kth.se/org/ict/ecs/sam/projects/forsyde/www/files/tutorial/tutorial.html#FSVec
+ use them can be found at https://forsyde.ict.kth.se/trac/wiki/ForSyDe/Haskell/ForSyDeTutorial#FSVec
 
 
 DEPENDENCIES

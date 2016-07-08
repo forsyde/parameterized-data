@@ -18,8 +18,8 @@ description:
  This library provides an implementation of parameterized types using
  type-level computations to implement the type parameters and emulate
  dependent types.
-
- Right now only fixed-sized vectors are provided. A tutorial on how to use them can be found at <http://www.ict.kth.se/forsyde/files/tutorial/tutorial.html#FSVec>
+ .
+ Right now only fixed-sized vectors are provided. A tutorial on how to use them can be found at <https://forsyde.ict.kth.se/trac/wiki/ForSyDe/Haskell/ForSyDeTutorial#FSVec>
 
 category:       Data
 tested-with:    GHC==7.10.3 GHC==8.0.1
@@ -33,6 +33,8 @@ Library
   exposed-modules: Data.Param,
                    Data.Param.FSVec
   ghc-options:	-Wall 
+  if impl(ghc >= 8.0) 
+    ghc-options: -Wno-redundant-constraints
 
 source-repository head
   type:     git
